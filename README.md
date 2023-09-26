@@ -90,7 +90,10 @@
             store_hours: [{'day': 'Sun:', 'timing': '11:00 AM-7:00 PM'}, {'day': 'Mon-Sat:', 'timing': '10:00 AM-8:00 PM'}]
 
         ``` 
-            
+        - [ ] Crawl all iphone 15 Pro and iphone 15 Pro Max, colors + capacity
+        - [ ] Crawl from all apple stores in the United States.
+        - [ ] Support apple watch ultra + bands
+        - [ ] Support Alert and Notification
 
 
 ## Use cases:
