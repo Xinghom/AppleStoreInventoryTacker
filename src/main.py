@@ -45,7 +45,7 @@ def parse_data(content):
                             for hour in store_data['storeHours']['hours']]
         }
         parsed_data_list.append(parsed_store_data)
-        
+
     return parsed_data_list
 
 def store_data(data):
@@ -59,15 +59,17 @@ def view_product_availability():
 
 def print_parsed_data(data):
     for i, store in enumerate(data):
-        print(f"No.{i} stores:")
+        print(f"No.{i + 1} stores:")
         for k, v in store.items():
-            print(f"{k}: {v}")
+            print(f"    {k}: {v}")
+        print('\n')
+
     return
 
 if __name__ == "__main__":
     # prototyping purpose
     product_id = "MTQU3LL/A"
-    zip_code = "98005"
+    zip_code = "97204" # Portland
     try:
         data = crawl_url(product_id, zip_code)
         print_parsed_data(data)
@@ -76,7 +78,7 @@ if __name__ == "__main__":
 
     # while True:
     #     product_id = "MTQU3LL/A"
-    #     zip_code = "98005"
+    #     zip_code = "97204"
     #     data = crawl_url(product_id, zip_code)
     #     if data != -1:
     #         print(data)
