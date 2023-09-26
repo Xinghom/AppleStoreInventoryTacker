@@ -7,12 +7,17 @@ CRAWL_INTERVAL = 600 # 10 mins
 URL_PATTERN = ("https://www.apple.com/shop/fulfillment-messages?pl=true&mts.0=regular"
                "&mts.1=compact&cppart=UNLOCKED/US&parts.0={product_id}&location={zip_code}")
 
+IPHONE_MODEL = {"iPhone 15 Pro" : "ip_15_pro",
+                "iPhone 15 Pro Max" : "ip_15_pro_max"}
+COLORS = {"White" : '0'}
+PRODUCT_IDS = {IPHONE_MODEL["iPhone 15 Pro"] + COLORS["White"] + "256GB" : "MTQT3LL/A"}
+
 def crawl_url(product_id, zip_code):
     url = URL_PATTERN.format(product_id=product_id, zip_code=zip_code)
     response = requests.get(url)
 
     if response.status_code == 200:
-        extracted_data = parse_data(response.content)
+        extracted_data = parse_data(response.content, product_id)
         return extracted_data
     else:
         msg = (f"failed to fetch data for product_id: {product_id}, "
@@ -20,13 +25,13 @@ def crawl_url(product_id, zip_code):
                "code: {response.status_code}")
         raise ValueError(msg)
 
-def parse_data(content):
+def parse_data(content, product_id):
     data = json.loads(content)
     all_stores_data = data['body']['content']['pickupMessage']['stores']
     parsed_data_list = []
     for store_data in all_stores_data:
         # Avoid indexing repeatly
-        parts_data = store_data['partsAvailability'].get('MTQU3LL/A', {})
+        parts_data = store_data['partsAvailability'].get(product_id, {})
         compact_data_from_parts = parts_data.get('messageTypes', {}).get('compact', {})
 
         address = store_data['address']
@@ -66,13 +71,26 @@ def print_parsed_data(data):
 
     return
 
+def get_and_print_interested_data(data):
+    target_stores = []
+    for store in data:
+        if store['availability_status'] != "unavailable":
+            target_stores.append(store)
+    if target_stores:
+        print_parsed_data(target_stores)
+    else:
+        print("No interested product found yet ...")
+    
+
 if __name__ == "__main__":
     # prototyping purpose
-    product_id = "MTQU3LL/A"
+    product_id = "MTQU3LL/A" # iPhone 15 Pro 256GB Natural Titanium
     zip_code = "97204" # Portland
     try:
         data = crawl_url(product_id, zip_code)
-        print_parsed_data(data)
+        get_and_print_interested_data(data)
+        product_id = "MTQT3LL/A" # white 15 pro 256GB
+        get_and_print_interested_data(crawl_url(product_id, zip_code))
     except ValueError as e:
         print(e)
 
